@@ -1,6 +1,5 @@
 import { Box, Collapse, Paper } from '@mui/material';
 import moment from 'moment';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
 import useQuery from '../../hooks/useQuery';
@@ -9,7 +8,7 @@ import ShareButton from '../share-button/ShareButtonWithInfo';
 import CourseDynamicsScreenButtons from './CourseDynamicsScreenButtons';
 import CourseDynamicsScreenChart from './CourseDynamicsScreenChart';
 
-const CourseDynamicsScreen = ({ display }) => {
+const CourseDynamicsScreen = () => {
     const [values, setValues] = useState({ from: '', to: '', currency: null });
     const [currenciesOptions, setCurrencies] = useState([]);
     const [chartData, setChartData] = useState(null);
@@ -35,7 +34,7 @@ const CourseDynamicsScreen = ({ display }) => {
         getRates(currency).then(
             response => {
                 setCurrencies(response.data);
-                if (query.has('currency') && display) {
+                if (query.has('currency') && query.has('dynamics')) {
                     setValues(prevValue => ({
                         ...prevValue,
                         currency: Number(query.get('currency'))
@@ -46,7 +45,7 @@ const CourseDynamicsScreen = ({ display }) => {
         );
 
     useEffect(() => {
-        if (display) {
+        if (query.has('dynamics')) {
             if (Object.keys(values).some(item => query.has(item))) {
                 const searchValues = Object.keys(values).reduce(
                     (acc, value) => ({ ...acc, [value]: query.get(value) }),
@@ -64,7 +63,7 @@ const CourseDynamicsScreen = ({ display }) => {
                 }
             }
         }
-    }, [display]);
+    }, [query]);
 
     const onChangeFromValue = event => {
         const currentValue = event.target.value;
@@ -94,7 +93,7 @@ const CourseDynamicsScreen = ({ display }) => {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Collapse in={display}>
+            <Collapse in={query.has('dynamics')}>
                 <Paper
                     sx={{
                         p: 2,
@@ -125,10 +124,6 @@ const CourseDynamicsScreen = ({ display }) => {
             </Collapse>
         </Box>
     );
-};
-
-CourseDynamicsScreen.propTypes = {
-    display: PropTypes.bool
 };
 
 export default CourseDynamicsScreen;

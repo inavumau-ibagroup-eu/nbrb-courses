@@ -63,9 +63,9 @@ const MainPage = () => {
                     <ToggleButton value="converter">Конвертер валют</ToggleButton>
                 </ToggleButtonGroup>
             </Paper>
-            <CoursesScreen display={query.has('courses')} />
-            <CourseDynamicsScreen display={query.has('dynamics')} />
-            <ConverterScreen display={query.has('converter')} />
+            <CoursesScreen />
+            <CourseDynamicsScreen />
+            <ConverterScreen />
         </Box>
     );
 };

@@ -1,7 +1,6 @@
 import { Box, Collapse, Paper } from '@mui/material';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 
 import useQuery from '../../hooks/useQuery';
 import CoursesScreenTable from './CoursesScreenTable';
@@ -9,7 +8,7 @@ import CoursesScreenButtons from './CoursesScreenButtons';
 import ShareButton from '../share-button/ShareButtonWithInfo';
 import { getRates } from '../../api/coursesApi';
 
-const CoursesScreen = ({ display }) => {
+const CoursesScreen = () => {
     const [value, setValue] = useState(moment().format('YYYY-MM-DD'));
     const [courses, setCourses] = useState(null);
     const [toast, setToast] = useState(false);
@@ -25,14 +24,14 @@ const CoursesScreen = ({ display }) => {
     };
 
     useEffect(() => {
-        if (display) {
+        if (query.has('courses')) {
             if (query.has('coursesDate')) {
                 const currentValue = query.get('coursesDate');
                 setValue(currentValue);
                 onFetch(currentValue);
             }
         }
-    }, [display]);
+    }, [query]);
 
     const onChangeValue = event => setValue(event.target.value);
 
@@ -51,7 +50,7 @@ const CoursesScreen = ({ display }) => {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Collapse in={display}>
+            <Collapse in={query.has('courses')}>
                 <Paper
                     sx={{
                         p: 2,
@@ -78,10 +77,6 @@ const CoursesScreen = ({ display }) => {
             </Collapse>
         </Box>
     );
-};
-
-CoursesScreen.propTypes = {
-    display: PropTypes.bool
 };
 
 export default CoursesScreen;

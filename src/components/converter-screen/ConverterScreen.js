@@ -1,13 +1,12 @@
 import { Box, Collapse, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 
 import useQuery from '../../hooks/useQuery';
 import ConverterScreenButtons from './ConverterScreenButtons';
 import ShareButton from '../share-button/ShareButtonWithInfo';
 import { getRates } from '../../api/coursesApi';
 
-const ConverterScreen = ({ display }) => {
+const ConverterScreen = () => {
     const [values, setValues] = useState({
         firstValue: '',
         secondValue: '',
@@ -43,10 +42,10 @@ const ConverterScreen = ({ display }) => {
     };
 
     useEffect(() => {
-        if (display) {
+        if (query.has('converter')) {
             onFetch();
         }
-    }, [display]);
+    }, [query]);
 
     const calculateValue = (value, firstCur, secondCur) => {
         const fromCur = currencies.find(item => item.Cur_Abbreviation === firstCur);
@@ -119,7 +118,7 @@ const ConverterScreen = ({ display }) => {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Collapse in={display}>
+            <Collapse in={query.has('converter')}>
                 <Paper
                     sx={{
                         p: 2,
@@ -149,10 +148,6 @@ const ConverterScreen = ({ display }) => {
             </Collapse>
         </Box>
     );
-};
-
-ConverterScreen.propTypes = {
-    display: PropTypes.bool
 };
 
 export default ConverterScreen;
