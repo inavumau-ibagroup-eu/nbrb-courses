@@ -8,8 +8,8 @@ import { getRates } from '../../api/coursesApi';
 
 const ConverterScreen = () => {
     const [values, setValues] = useState({
-        firstValue: '',
-        secondValue: '',
+        firstValue: 0,
+        secondValue: 0,
         firstCurrency: '',
         secondCurrency: ''
     });
@@ -24,18 +24,6 @@ const ConverterScreen = () => {
                     { Cur_Abbreviation: 'BYN', Cur_OfficialRate: 1, Cur_Scale: 1 },
                     ...response.data
                 ]);
-                const valuesKeys = Object.keys(values);
-                if (valuesKeys.some(item => query.has(item))) {
-                    setValues(prevState =>
-                        valuesKeys.reduce(
-                            (acc, value) => ({
-                                ...acc,
-                                [value]: query.get(value) || prevState[value]
-                            }),
-                            {}
-                        )
-                    );
-                }
             },
             () => setCurrencies(null)
         );
@@ -59,50 +47,72 @@ const ConverterScreen = () => {
         );
     };
 
+    useEffect(() => {
+        if (query.has('converter') && currencies.length > 0) {
+            const valuesKeys = Object.keys(values);
+            if (valuesKeys.some(item => query.has(item))) {
+                setValues(prevState =>
+                    valuesKeys.reduce(
+                        (acc, value) => ({ ...acc, [value]: query.get(value) || prevState[value] }),
+                        {}
+                    )
+                );
+            } else {
+                setValues(prevState => ({
+                    ...prevState,
+                    firstValue: 1,
+                    secondValue: calculateValue(1, 'USD', 'BYN'),
+                    firstCurrency: 'USD',
+                    secondCurrency: 'BYN'
+                }));
+            }
+        }
+    }, [query, currencies.length]);
+
     const onChangeFirstValue = event =>
-        setValues(prevValue => ({
-            ...prevValue,
+        setValues(prevState => ({
+            ...prevState,
             firstValue: event.target.value,
             secondValue:
-                prevValue.firstCurrency && prevValue.secondCurrency
+                prevState.firstCurrency && prevState.secondCurrency
                     ? calculateValue(
                           event.target.value,
-                          prevValue.firstCurrency,
-                          prevValue.secondCurrency
+                          prevState.firstCurrency,
+                          prevState.secondCurrency
                       )
                     : event.target.value
         }));
 
     const onChangeSecondValue = event =>
-        setValues(prevValue => ({
-            ...prevValue,
+        setValues(prevState => ({
+            ...prevState,
             firstValue:
-                prevValue.firstCurrency && prevValue.secondCurrency
+                prevState.firstCurrency && prevState.secondCurrency
                     ? calculateValue(
                           event.target.value,
-                          prevValue.secondCurrency,
-                          prevValue.firstCurrency
+                          prevState.secondCurrency,
+                          prevState.firstCurrency
                       )
                     : event.target.value,
             secondValue: event.target.value
         }));
 
     const onChangeFirstCurrency = event =>
-        setValues(prevValue => ({
-            ...prevValue,
+        setValues(prevState => ({
+            ...prevState,
             firstCurrency: event.target.value,
-            secondValue: prevValue.secondCurrency
-                ? calculateValue(prevValue.firstValue, event.target.value, prevValue.secondCurrency)
-                : prevValue.secondValue
+            secondValue: prevState.secondCurrency
+                ? calculateValue(prevState.firstValue, event.target.value, prevState.secondCurrency)
+                : prevState.secondValue
         }));
 
     const onChangeSecondCurrency = event =>
-        setValues(prevValue => ({
-            ...prevValue,
+        setValues(prevState => ({
+            ...prevState,
             secondCurrency: event.target.value,
-            firstValue: prevValue.firstCurrency
-                ? calculateValue(prevValue.secondValue, event.target.value, prevValue.firstCurrency)
-                : prevValue.firstValue
+            firstValue: prevState.firstCurrency
+                ? calculateValue(prevState.secondValue, event.target.value, prevState.firstCurrency)
+                : prevState.firstValue
         }));
 
     const onShare = () => {

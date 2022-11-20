@@ -96,7 +96,12 @@ const CourseDynamicsScreenButtons = ({
                 ))}
             </TextField>
             <Button
-                disabled={disabledLoad || !currentCurrencyExist()}
+                disabled={
+                    disabledLoad ||
+                    !currentCurrencyExist() ||
+                    dateNotValid(dynamicsValues.to) ||
+                    dateNotValid(dynamicsValues.from)
+                }
                 sx={{ py: 0.85, px: 2 }}
                 variant="outlined"
                 onClick={onLoadChart}

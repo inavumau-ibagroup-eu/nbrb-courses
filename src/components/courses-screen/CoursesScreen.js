@@ -29,6 +29,8 @@ const CoursesScreen = () => {
                 const currentValue = query.get('coursesDate');
                 setValue(currentValue);
                 onFetch(currentValue);
+            } else {
+                onFetch(value);
             }
         }
     }, [query]);

@@ -9,76 +9,85 @@ import CourseDynamicsScreenButtons from './CourseDynamicsScreenButtons';
 import CourseDynamicsScreenChart from './CourseDynamicsScreenChart';
 
 const CourseDynamicsScreen = () => {
-    const [values, setValues] = useState({ from: '', to: '', currency: null });
+    const [values, setValues] = useState({
+        from: moment().subtract(7, 'd').format('YYYY-MM-DD'),
+        to: moment().format('YYYY-MM-DD'),
+        currency: 431
+    });
     const [currenciesOptions, setCurrencies] = useState([]);
     const [chartData, setChartData] = useState(null);
     const [toast, setToast] = useState(false);
     const query = useQuery();
 
     const disabledLoad = (from, to) =>
-        !from || !to || moment(from, 'YYYY-MM-DD').isAfter(moment(to, 'YYYY-MM-DD'));
+        !moment(from).isValid() ||
+        !moment(to).isValid() ||
+        moment(from, 'YYYY-MM-DD').isAfter(moment(to, 'YYYY-MM-DD'));
 
-    const onFetchDynamics = (from, to, id) =>
-        getDynamics(from, to, id).then(
-            response =>
-                setChartData(
-                    response.data.map(item => ({
-                        Date: moment(item.Date).format('DD-MM-YYYY'),
-                        Course: item.Cur_OfficialRate
-                    }))
-                ),
-            () => setChartData([])
-        );
+    const onFetchDynamics = (from, to, id) => {
+        if (!disabledLoad(from, to) || !values.currency)
+            getDynamics(from, to, id).then(
+                response =>
+                    setChartData(
+                        response.data.map(item => ({
+                            Date: moment(item.Date).format('DD-MM-YYYY'),
+                            Course: item.Cur_OfficialRate
+                        }))
+                    ),
+                () => setChartData([])
+            );
+    };
 
-    const onFetchCurrency = currency =>
-        getRates(currency).then(
-            response => {
-                setCurrencies(response.data);
-                if (query.has('currency') && query.has('dynamics')) {
-                    setValues(prevValue => ({
-                        ...prevValue,
-                        currency: Number(query.get('currency'))
-                    }));
-                }
-            },
-            () => setCurrencies([])
-        );
+    const onFetchCurrency = currency => {
+        const currDate = moment(currency, 'YYYY-MM-DD');
+        if (currDate.isBefore(moment()) && currDate.isAfter(moment('1995-03-31')))
+            getRates(currency).then(
+                response => {
+                    setCurrencies(response.data);
+                },
+                () => setCurrencies([])
+            );
+    };
 
     useEffect(() => {
         if (query.has('dynamics')) {
-            if (Object.keys(values).some(item => query.has(item))) {
-                const searchValues = Object.keys(values).reduce(
-                    (acc, value) => ({ ...acc, [value]: query.get(value) }),
+            const valuesKeys = Object.keys(values);
+            if (valuesKeys.some(item => query.has(item))) {
+                const searchValues = valuesKeys.reduce(
+                    (acc, value) => ({ ...acc, [value]: query.get(value) || values[value] }),
                     {}
                 );
-                setValues(prevValue => ({
-                    from: searchValues.from || prevValue.from,
-                    to: searchValues.to || prevValue.to
-                }));
-                if (searchValues.from) {
-                    onFetchCurrency(searchValues.from);
-                }
-                if (searchValues.currency && !disabledLoad(searchValues.from, searchValues.to)) {
-                    onFetchDynamics(searchValues.from, searchValues.to, searchValues.currency);
-                }
+                setValues({ ...searchValues, currency: Number(searchValues.currency) });
+                onFetchCurrency(searchValues.from);
+                onFetchDynamics(searchValues.from, searchValues.to, searchValues.currency);
+            } else {
+                onFetchCurrency(values.from);
+                onFetchDynamics(values.from, values.to, values.currency);
             }
         }
     }, [query]);
 
-    const onChangeFromValue = event => {
-        const currentValue = event.target.value;
-        const currDate = moment(currentValue, 'YYYY-MM-DD');
-        setValues(prevState => ({ ...prevState, from: currentValue }));
-        if (currDate.isBefore(moment()) && currDate.isAfter(moment('1995-03-31'))) {
-            onFetchCurrency(currentValue);
+    useEffect(() => {
+        if (query.has('dynamics') && currenciesOptions.length !== 0) {
+            const currentCurrencyExist = currenciesOptions.find(
+                item => item.Cur_ID === values.currency
+            );
+            if (!currentCurrencyExist) {
+                setValues(prevState => ({ ...prevState, currency: '' }));
+            }
         }
+    }, [currenciesOptions]);
+
+    const onChangeFromValue = event => {
+        onFetchCurrency(event.target.value);
+        setValues(prevState => ({ ...prevState, from: event.target.value }));
     };
 
     const onChangeToValue = event =>
         setValues(prevState => ({ ...prevState, to: event.target.value }));
 
     const onChangeCurrency = event =>
-        setValues(prevValue => ({ ...prevValue, currency: event.target.value }));
+        setValues(prevState => ({ ...prevState, currency: event.target.value }));
 
     const onShare = () => {
         const shareSearch = new URLSearchParams();
