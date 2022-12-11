@@ -6,15 +6,12 @@ const CoursesScreenButtons = ({ dateValue, onChangeDate, onLoad, disabledLoad })
     <Box
         sx={{
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
             flexWrap: 'wrap',
             gap: 2
         }}
     >
         <TextField
-            sx={{ colorScheme: 'dark' }}
-            label="Выберите дату"
+            label="Дата"
             InputLabelProps={{ shrink: true }}
             type="date"
             size="small"

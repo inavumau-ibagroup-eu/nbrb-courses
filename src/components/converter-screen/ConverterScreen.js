@@ -1,10 +1,11 @@
-import { Box, Collapse, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import useQuery from '../../hooks/useQuery';
 import ConverterScreenButtons from './ConverterScreenButtons';
 import ShareButton from '../share-button/ShareButtonWithInfo';
 import { getRates } from '../../api/coursesApi';
+import ScreenWrapper from '../screen-wrapper/ScreenWrapper';
+import ErrorWrapper from '../error-wrapper/ErrorWrapper';
 
 const ConverterScreen = () => {
     const [values, setValues] = useState({
@@ -48,7 +49,7 @@ const ConverterScreen = () => {
     };
 
     useEffect(() => {
-        if (query.has('converter') && currencies.length > 0) {
+        if (query.has('converter') && currencies?.length > 0) {
             const valuesKeys = Object.keys(values);
             if (valuesKeys.some(item => query.has(item))) {
                 setValues(prevState =>
@@ -67,7 +68,7 @@ const ConverterScreen = () => {
                 }));
             }
         }
-    }, [query, currencies.length]);
+    }, [query, currencies?.length]);
 
     const onChangeFirstValue = event =>
         setValues(prevState => ({
@@ -127,36 +128,19 @@ const ConverterScreen = () => {
     const onCloseToast = () => setToast(false);
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Collapse in={query.has('converter')}>
-                <Paper
-                    sx={{
-                        p: 2,
-                        mt: 2,
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}
-                >
-                    {currencies !== null ? (
-                        <ConverterScreenButtons
-                            converterValues={values}
-                            currencies={currencies}
-                            onChangeFirstValue={onChangeFirstValue}
-                            onChangeSecondValue={onChangeSecondValue}
-                            onChangeFirstCurrency={onChangeFirstCurrency}
-                            onChangeSecondCurrency={onChangeSecondCurrency}
-                        />
-                    ) : (
-                        <Typography>Возникла ошибка или данные отсутствуют.</Typography>
-                    )}
-                    <ShareButton
-                        showMessage={toast}
-                        onCloseMessage={onCloseToast}
-                        onShare={onShare}
-                    />
-                </Paper>
-            </Collapse>
-        </Box>
+        <ScreenWrapper display={query.has('converter')} header="Конвертер валют">
+            <ErrorWrapper isError={currencies === null}>
+                <ConverterScreenButtons
+                    converterValues={values}
+                    currencies={currencies}
+                    onChangeFirstValue={onChangeFirstValue}
+                    onChangeSecondValue={onChangeSecondValue}
+                    onChangeFirstCurrency={onChangeFirstCurrency}
+                    onChangeSecondCurrency={onChangeSecondCurrency}
+                />
+            </ErrorWrapper>
+            <ShareButton showMessage={toast} onCloseMessage={onCloseToast} onShare={onShare} />
+        </ScreenWrapper>
     );
 };
 

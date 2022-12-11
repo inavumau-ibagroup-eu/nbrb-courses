@@ -1,17 +1,15 @@
-import { Box, CssBaseline, ThemeProvider } from '@mui/material';
+import { Box } from '@mui/material';
 import { BrowserRouter } from 'react-router-dom';
+import MuiThemeProvider from './components/mui-theme-provider/MuiThemeProvider';
 
-import darkTheme from './theme';
 import MainPage from './pages/MainPage';
 
 const App = () => {
     return (
-        <ThemeProvider theme={darkTheme}>
-            <CssBaseline enableColorScheme />
+        <MuiThemeProvider>
             <BrowserRouter>
                 <Box
                     sx={{
-                        minHeight: '100vh',
                         display: 'flex',
                         justifyContent: 'center',
                         backgroundColor: 'background.default'
@@ -20,7 +18,7 @@ const App = () => {
                     <MainPage />
                 </Box>
             </BrowserRouter>
-        </ThemeProvider>
+        </MuiThemeProvider>
     );
 };
 

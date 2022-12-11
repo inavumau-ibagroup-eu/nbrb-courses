@@ -1,10 +1,10 @@
 import { Box, MenuItem, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
 
-const boxesStyle = { display: 'flex', gap: 2, flexWrap: 'wrap' };
+const boxesStyle = { display: 'flex', gap: 2 };
 
 const selectProps = {
-    sx: { width: 100 },
+    sx: { minWidth: 100 },
     SelectProps: {
         MenuProps: {
             sx: {
@@ -20,7 +20,8 @@ const selectProps = {
 const fieldProps = {
     label: 'Сумма',
     type: 'number',
-    size: 'small'
+    size: 'small',
+    sx: { minWidth: 100 }
 };
 
 const ConverterScreenButtons = ({
