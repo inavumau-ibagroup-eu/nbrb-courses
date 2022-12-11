@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/nbrb-courses/static/css/main.e6c13ad2.css",
+    "main.js": "/nbrb-courses/static/js/main.9eca4a30.js",
+    "index.html": "/nbrb-courses/index.html",
+    "main.e6c13ad2.css.map": "/nbrb-courses/static/css/main.e6c13ad2.css.map",
+    "main.9eca4a30.js.map": "/nbrb-courses/static/js/main.9eca4a30.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.9eca4a30.js"
+  ]
+}
