@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 const dateFieldProps = {
     size: 'small',
     type: 'date',
-    sx: { colorScheme: 'dark' },
     InputLabelProps: { shrink: true }
 };
 
@@ -46,8 +45,6 @@ const CourseDynamicsScreenButtons = ({
         <Box
             sx={{
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
                 flexWrap: 'wrap',
                 gap: 2
             }}

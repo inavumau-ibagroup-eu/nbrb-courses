@@ -1,4 +1,3 @@
-import { Box, Collapse, Paper } from '@mui/material';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 
@@ -7,6 +6,7 @@ import { getDynamics, getRates } from '../../api/coursesApi';
 import ShareButton from '../share-button/ShareButtonWithInfo';
 import CourseDynamicsScreenButtons from './CourseDynamicsScreenButtons';
 import CourseDynamicsScreenChart from './CourseDynamicsScreenChart';
+import ScreenWrapper from '../screen-wrapper/ScreenWrapper';
 
 const CourseDynamicsScreen = () => {
     const [values, setValues] = useState({
@@ -30,8 +30,8 @@ const CourseDynamicsScreen = () => {
                 response =>
                     setChartData(
                         response.data.map(item => ({
-                            Date: moment(item.Date).format('DD-MM-YYYY'),
-                            Course: item.Cur_OfficialRate
+                            date: moment(item.Date).format('DD.MM.YYYY'),
+                            course: item.Cur_OfficialRate
                         }))
                     ),
                 () => setChartData([])
@@ -101,37 +101,19 @@ const CourseDynamicsScreen = () => {
     const onCloseToast = () => setToast(false);
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Collapse in={query.has('dynamics')}>
-                <Paper
-                    sx={{
-                        p: 2,
-                        mt: 2,
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}
-                    elevation={2}
-                >
-                    <CourseDynamicsScreenButtons
-                        dynamicsValues={values}
-                        currenciesOptions={currenciesOptions}
-                        onChangeFromValue={onChangeFromValue}
-                        onChangeToValue={onChangeToValue}
-                        onChangeCurrency={onChangeCurrency}
-                        onLoad={onFetchDynamics}
-                        disabledLoad={disabledLoad(values.from, values.to)}
-                    />
-                    <Collapse in={chartData?.length >= 0}>
-                        <CourseDynamicsScreenChart chartData={chartData} />
-                    </Collapse>
-                    <ShareButton
-                        showMessage={toast}
-                        onCloseMessage={onCloseToast}
-                        onShare={onShare}
-                    />
-                </Paper>
-            </Collapse>
-        </Box>
+        <ScreenWrapper display={query.has('dynamics')} header="Динамика курса">
+            <CourseDynamicsScreenButtons
+                dynamicsValues={values}
+                currenciesOptions={currenciesOptions}
+                onChangeFromValue={onChangeFromValue}
+                onChangeToValue={onChangeToValue}
+                onChangeCurrency={onChangeCurrency}
+                onLoad={onFetchDynamics}
+                disabledLoad={disabledLoad(values.from, values.to)}
+            />
+            <CourseDynamicsScreenChart chartData={chartData} />
+            <ShareButton showMessage={toast} onCloseMessage={onCloseToast} onShare={onShare} />
+        </ScreenWrapper>
     );
 };
 

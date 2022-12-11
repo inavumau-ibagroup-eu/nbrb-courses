@@ -1,4 +1,3 @@
-import { Box, Collapse, Paper } from '@mui/material';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 
@@ -7,6 +6,7 @@ import CoursesScreenTable from './CoursesScreenTable';
 import CoursesScreenButtons from './CoursesScreenButtons';
 import ShareButton from '../share-button/ShareButtonWithInfo';
 import { getRates } from '../../api/coursesApi';
+import ScreenWrapper from '../screen-wrapper/ScreenWrapper';
 
 const CoursesScreen = () => {
     const [value, setValue] = useState(moment().format('YYYY-MM-DD'));
@@ -51,33 +51,16 @@ const CoursesScreen = () => {
     const onCloseToast = () => setToast(false);
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Collapse in={query.has('courses')}>
-                <Paper
-                    sx={{
-                        p: 2,
-                        mt: 2,
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}
-                >
-                    <CoursesScreenButtons
-                        dateValue={value}
-                        onChangeDate={onChangeValue}
-                        onLoad={onFetch}
-                        disabledLoad={disabledLoad()}
-                    />
-                    <Collapse in={courses?.length >= 0}>
-                        <CoursesScreenTable coursesData={courses} />
-                    </Collapse>
-                    <ShareButton
-                        showMessage={toast}
-                        onCloseMessage={onCloseToast}
-                        onShare={onShare}
-                    />
-                </Paper>
-            </Collapse>
-        </Box>
+        <ScreenWrapper display={query.has('courses')} header="Курсы валют Нац. Банка РБ">
+            <CoursesScreenButtons
+                dateValue={value}
+                onChangeDate={onChangeValue}
+                onLoad={onFetch}
+                disabledLoad={disabledLoad()}
+            />
+            <CoursesScreenTable coursesData={courses} />
+            <ShareButton showMessage={toast} onCloseMessage={onCloseToast} onShare={onShare} />
+        </ScreenWrapper>
     );
 };
 
